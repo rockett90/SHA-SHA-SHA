@@ -10,16 +10,22 @@ import hashlib
 #######################################
 
 buffer = 800000   #variable for the read buffer size in bits (100kB)
-myfile = ""     #variable to store the file path
+genMyFile = ""     #variable to store the file path
+compMyFile = ""
 hash_gen = ""
+hash_comp = ""
 
 def genBrowseForFiles():
-    global myfile
-    myfile = filedialog.askopenfilename(initialdir = "/",title = "Select a File",filetypes = (("Text files","*.txt*"),("all files","*.*")))
+    global genMyFile
+    genMyFile = filedialog.askopenfilename(initialdir = "/",title = "Select a File",filetypes = (("Text files","*.txt*"),("all files","*.*")))
+    
+def compBrowseForFiles():
+    global compMyFile
+    compMyFile = filedialog.askopenfilename(initialdir = "/",title = "Select a File",filetypes = (("Text files","*.txt*"),("all files","*.*")))
     
 def genHash():
     global hash_gen
-    with open(myfile, 'rb') as f:   #read file as binary
+    with open(genMyFile, 'rb') as f:   #read file as binary
         while True:
             data = f.read(buffer)
             if not data:
@@ -34,21 +40,34 @@ def genHash():
                 hash_gen.set(hashlib.sha512(data).hexdigest())
             else:
                 hash_gen.set("Please Choose an Algorithm from the Drop Down Menu...")
-'''      
+                
+def compHash():
+    global hash_comp
+    with open(compMyFile, 'rb') as f:   #read file as binary
+        while True:
+            data = f.read(buffer)
+            if not data:
+                break
+            elif algorithm_comp_combobox.get() == "SHA-1":
+                hash_comp.set(hashlib.sha1(data).hexdigest())
+            elif algorithm_comp_combobox.get() == "SHA-256":
+                hash_comp.set(hashlib.sha256(data).hexdigest())
+            elif algorithm_comp_combobox.get() == "SHA-384":
+                hash_comp.set(hashlib.sha384(data).hexdigest())
+            elif algorithm_comp_combobox.get() == "SHA-512":
+                hash_comp.set(hashlib.sha512(data).hexdigest())
+            else:
+                hash_comp.set("Please Choose an Algorithm from the Drop Down Menu...")
+            comparison()
+     
 def comparison():
-    if calculated_hash.get() == Inputtxt.get("1.0", "end-1c"):
-        results.set("These Match!")
-        labelConfigPass()
+    if comp_entry.get() == "":
+        comp_result.set("Please Enter Hash for Comparison")
+    elif hash_comp.get() == comp_entry.get():
+        comp_result.set("These Match!")
     else:
-        results.set("These Don't Match :(")
-        labelConfigFail()
-        
-def labelConfigPass():
-    Result.config(bg="light green", fg="black")
-    
-def labelConfigFail():
-    Result.config(bg="red", fg="white")
-'''
+        comp_result.set("These Don't Match :(")
+
 
 #######################################
 #Doing all the GUI bits and bobs
@@ -62,11 +81,13 @@ window.title("SHA Generation / Comparison Tool")    #giving it a title
 window_icon = tkinter.PhotoImage(file=(Path(__file__).parent / "icon.png"))
 window.iconphoto(True, window_icon)
 
-#Variable for the GUI
-expected_hash = StringVar();
-expected_hash.set("Is my stringvar working?")
+#Variables for the GUI
 hash_gen = StringVar();
 hash_gen.set("")
+hash_comp = StringVar();
+hash_comp.set("")
+comp_result = StringVar();
+comp_result.set("")
     
 #Creating the inner frame
 frame = tkinter.Frame(window)
@@ -103,31 +124,31 @@ algorithm_comp_combobox = ttk.Combobox(sha_comp_frame, values=["Choose Algorithm
 algorithm_comp_combobox.current(0)   #puts the first entry as default (Choose)
 algorithm_comp_combobox.grid(row = 0, column = 0, padx = 5)
 
-comp_choose_file_button = ttk.Button(sha_comp_frame, width = 22,  text ="Browse for File...")
+comp_choose_file_button = ttk.Button(sha_comp_frame, width = 22,  text ="Browse for File...", command = compBrowseForFiles)
 comp_choose_file_button.grid(row = 0, column = 1, padx = 5)
 
-comp_generate_button = ttk.Button(sha_comp_frame, width = 22,  text ="Generate Hash")
+comp_generate_button = ttk.Button(sha_comp_frame, width = 22,  text ="Compare Hashes", command = compHash)
 comp_generate_button.grid(row = 0, column = 3, padx = 5)
 
 comp_copy_gen_button = ttk.Button(sha_comp_frame, width = 22,  text ="Copy to Clipboard")
 comp_copy_gen_button.grid(row = 0, column = 4, padx = 5)
 
-comp_calculated_label = ttk.Label(sha_comp_frame, text = "Enter Hash for Comparison")
-comp_calculated_label.grid(row = 2, columnspan = 2, padx = 5, pady = (10,0), sticky = "W")
+comp_label = ttk.Label(sha_comp_frame, text = "Enter Hash for Comparison")
+comp_label.grid(row = 2, columnspan = 2, padx = 5, pady = (10,0), sticky = "W")
 
-comp_calculated_entry = tkinter.Entry(sha_comp_frame, width = 99, bg = "light yellow", textvariable=expected_hash)
-comp_calculated_entry.grid(row = 3, columnspan = 5, padx = 5, pady = (0,10))
+comp_entry = tkinter.Entry(sha_comp_frame, width = 99, bg = "light yellow")
+comp_entry.grid(row = 3, columnspan = 5, padx = 5, pady = (0,10))
 
 comp_calculated_label = ttk.Label(sha_comp_frame, text = "Generated Hexadecimal Hash")
 comp_calculated_label.grid(row = 4, columnspan = 2, padx = 5, pady = (0,0), sticky = "W")
 
-comp_calculated_entry = tkinter.Entry(sha_comp_frame, width = 99, bg = "white")
+comp_calculated_entry = tkinter.Entry(sha_comp_frame, width = 99, bg = "white", textvariable = hash_comp)
 comp_calculated_entry.grid(row = 5, columnspan = 5, padx = 5, pady = (0,10))
 
-comp_calculated_label = ttk.Label(sha_comp_frame, text = "Comparison Result")
-comp_calculated_label.grid(row = 6, columnspan = 2, padx = 5, pady = (0,0), sticky = "W")
+comp_result_label = ttk.Label(sha_comp_frame, text = "Comparison Result")
+comp_result_label.grid(row = 6, columnspan = 2, padx = 5, pady = (0,0), sticky = "W")
 
-comp_calculated_entry = tkinter.Entry(sha_comp_frame, width = 30, bg = "white")
-comp_calculated_entry.grid(row = 7, columnspan = 5, padx = 5, pady = (0,10), sticky = "W")
+comp_result_entry = tkinter.Entry(sha_comp_frame, width = 35, bg = "white", textvariable = comp_result)
+comp_result_entry.grid(row = 7, columnspan = 5, padx = 5, pady = (0,10), sticky = "W")
 
 window.mainloop()
