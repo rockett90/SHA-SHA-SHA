@@ -15,7 +15,7 @@ pip install pyinstaller
 
 Change to the directory the .py file is stored
 ```bash
-cd C:\Users\Adam\WorkingDir
+cd C:\Users\YourName\WorkingDir
 ```
 
 Build the executable
