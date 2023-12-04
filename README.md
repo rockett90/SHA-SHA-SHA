@@ -1,4 +1,4 @@
-# SHA-SHA-SHA: A Summary
+## SHA-SHA-SHA: A Summary
 A Simple GUI for generating and/or comparing hexadecimal hashes using the SHA-1, 256, 384 or 512 algorithm(s) using Python hashlib and Tkinter.
 
 # GUI Example
@@ -6,19 +6,20 @@ Use the interface to either generate a hexadecimal SHA from a file, or compare a
 ![example](https://github.com/rockett90/SHA-SHA-SHA/assets/149118299/fd5575a7-995f-4eb7-bd5a-0046f5e19bd5)
 
 # Windows Executable
-To create an executable from the Python code, open Command Prompt and enter the following:
+Steps to create an executable from the Python code:
 
-Install Pyinstaller
+1. Install Pyinstaller
 ```bash
 pip install pyinstaller
 ```
 
-Change to the directory the .py file is stored
+2. Change to the directory the .py and .png files are stored
 ```bash
 cd C:\Users\YourName\WorkingDir
 ```
 
-Build the executable
+3. Build the executable
 ```bash
 pyinstaller --onefile --noconsole --add-data ".\icon.png:." SHA_Gen-Compare_GUI.py
 ```
+
